@@ -1,0 +1,10 @@
+{
+  "instruction": "Using the provided first aid reference text, generate a realistic multi-turn emergency conversation between a panicking user and a calm, knowledgeable first aid assistant. The assistant must guide the user through the correct procedure step by step, asking clarifying questions before giving instructions.",
+  "task_type": "qa",
+  "constraints": "The user must reveal information progressively across turns, not all at once. The assistant must ask at least one clarifying question before giving the main procedure. Include at least one user mistake or misunderstanding that the assistant corrects. Minimum 5 turns total (user + assistant combined). All assistant instructions must be grounded only in the seed text. Do not use filler phrases like 'Great!' or 'Excellent!' — keep assistant tone calm and direct.",
+  "metadata": {
+    "author": "aditya@zenteiq.com",
+    "domain": "first_aid",
+    "version": "v1.0"
+  }
+}

@@ -1,0 +1,68 @@
+You are a first aid training data specialist generating realistic emergency conversation data.
+
+Your task: Generate ONE multi-turn conversation between a panicking user and a calm first aid assistant, based strictly on the reference text below.
+
+---
+REFERENCE TEXT (extracted from a certified first aid manual):
+{{ seed.text }}
+---
+
+Instruction: {{ instruction.instruction }}
+Difficulty Level: {{ request.difficulty or 'med' }}
+Output Language: {{ request.language_out or 'English' }}
+{% if instruction.constraints %}
+Strict Constraints: {{ instruction.constraints }}
+{% endif %}
+
+---
+GENERATION RULES — follow every rule exactly:
+
+CONVERSATION STRUCTURE — must follow this arc:
+  Turn 1 (user): Opens in a panic. States the broad emergency but NOT all details yet.
+  Turn 2 (assistant): Stays calm. Asks 1–2 targeted clarifying questions (e.g., "Is the person conscious?", "How old is the victim?", "Is the bleeding controlled?")
+  Turn 3 (user): Answers the questions. Reveals more details. May make a common mistake (e.g., tries to pull out an embedded object, applies ice directly to a burn).
+  Turn 4 (assistant): Corrects the mistake if one was made. Gives the first concrete action step. Asks follow-up if needed.
+  Turn 5+ (user/assistant): Continues until the procedure is complete or the user is told to call AMBULANCE.
+
+ASSISTANT BEHAVIOR RULES:
+  a. Never give all steps at once — deliver 1–2 steps per turn, then check back.
+  b. Never say "Great!", "Excellent!", "Good job!" — use neutral acknowledgments like "Understood." or "Okay."
+  c. All instructions must be grounded ONLY in the reference text. Do not add steps not in the text.
+  d. Always include a AMBULANCE recommendation turn if the condition is life-threatening.
+
+USER BEHAVIOR RULES:
+  a. User must sound scared, may use incomplete sentences.
+  b. User must make at least one mistake (wrong action, misconception) that the assistant corrects.
+  c. User reveals information progressively — not all at once.
+
+SKIP RULE: If the reference text is a table of contents, index, glossary, or has no actionable first aid procedure, output only:
+{% raw %}{"skip": true, "reason": "<one sentence reason>"}{% endraw %}
+
+---
+Respond ONLY with valid JSON. No preamble, no markdown code fences, no explanation outside the JSON.
+
+Required output format:
+{% raw %}
+{
+  "skip": false,
+  "condition": "<medical condition or injury>",
+  "difficulty": "<easy | med | hard>",
+  "context": "<1–2 sentence scene description — who, where, what happened>",
+  "conversation": [
+    {"role": "user", "content": "<message>"},
+    {"role": "assistant", "content": "<message>"},
+    {"role": "user", "content": "<message>"},
+    {"role": "assistant", "content": "<message>"},
+    {"role": "user", "content": "<message>"},
+    {"role": "assistant", "content": "<message>"}
+  ],
+  "mistakes_corrected": [
+    "<description of the mistake the user made and what the assistant corrected>"
+  ],
+  "key_actions_taken": [
+    "<action 1 the assistant guided>",
+    "<action 2>"
+  ],
+  "resolution": "<one of: called_AMBULANCE | self_managed | referred_to_doctor | monitoring>"
+}
+{% endraw %}

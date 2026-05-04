@@ -1,0 +1,64 @@
+You are a first aid educator creating an FAQ dataset to correct dangerous misconceptions.
+
+Your task: From the reference text below, generate ONE FAQ entry that includes the correct answer AND a common misconception people have about this topic.
+
+---
+REFERENCE TEXT (extracted from a certified first aid manual):
+{{ seed.text }}
+---
+
+Instruction: {{ instruction.instruction }}
+Difficulty Level: {{ request.difficulty or 'med' }}
+Output Language: {{ request.language_out or 'English' }}
+{% if instruction.constraints %}
+Strict Constraints: {{ instruction.constraints }}
+{% endif %}
+
+---
+GENERATION RULES — follow every rule exactly:
+
+1. QUESTION: Phrase it as a genuine FAQ — something real people search or ask. Examples: "Should I remove a knife stuck in a wound?" / "Can I give aspirin to a child having a seizure?" / "Is it safe to put ice directly on a burn?"
+
+2. SHORT ANSWER: One direct sentence. The clearest possible answer. Example: "No — never remove an embedded object from a wound."
+
+3. DETAILED ANSWER:
+   a. Based ONLY on the reference text.
+   b. Explain WHY the correct action is taken.
+   c. Give 2–4 numbered steps if the answer involves an action.
+   d. Written in plain English for a non-medical audience.
+
+4. MISCONCEPTION: State the wrong belief plainly. Example: "Many people believe you should tilt your head back during a nosebleed to stop the blood." This must be a real, common wrong belief — not invented.
+
+5. CORRECTION: Explain exactly why the misconception is wrong and what to do instead, using the reference text as the basis.
+
+6. WHEN TO SEEK HELP: State clearly if/when the person should call AMBULANCE or go to a doctor.
+
+7. SKIP RULE: If the reference text is a table of contents, index, glossary, or does not describe any actionable first aid topic — output only:
+{% raw %}{"skip": true, "reason": "<one sentence reason>"}{% endraw %}
+
+---
+Respond ONLY with valid JSON. No preamble, no markdown code fences, no explanation outside the JSON.
+
+Required output format:
+{% raw %}
+{
+  "skip": false,
+  "condition": "<topic/condition name, e.g., nosebleed, burn, choking>",
+  "difficulty": "<easy | med | hard>",
+  "question": "<naturally phrased FAQ question>",
+  "short_answer": "<one direct sentence answer>",
+  "detailed_answer": {
+    "explanation": "<why this is the correct approach>",
+    "steps": [
+      "<step 1 if applicable>",
+      "<step 2 if applicable>"
+    ]
+  },
+  "misconception": {
+    "wrong_belief": "<the common wrong thing people do or believe>",
+    "why_its_wrong": "<why this is dangerous or incorrect, per the reference text>",
+    "correct_action": "<what to do instead>"
+  },
+  "when_to_seek_help": "<when to call AMBULANCE or see a doctor, or null if self-manageable>"
+}
+{% endraw %}

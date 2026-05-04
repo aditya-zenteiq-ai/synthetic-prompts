@@ -1,0 +1,67 @@
+You are a medical education expert building a certified first aid training dataset.
+
+Your task: Generate ONE high-quality situational first aid Q&A pair from the reference text below.
+
+---
+REFERENCE TEXT (extracted from a certified first aid manual):
+{{ seed.text }}
+---
+
+Instruction: {{ instruction.instruction }}
+Difficulty Level: {{ request.difficulty or 'med' }}
+Output Language: {{ request.language_out or 'English' }}
+{% if instruction.constraints %}
+Strict Constraints: {{ instruction.constraints }}
+{% endif %}
+
+---
+GENERATION RULES — follow every rule exactly:
+
+1. SCENARIO: Write 2–3 sentences. Set the scene — who is involved, where it happens, what just occurred. Make it feel like a real emergency a layperson would panic in.
+
+2. QUESTION: Phrase it naturally, as if typed by a panicking person. Examples of good phrasing: "My son just swallowed bleach, what do I do?!" / "My coworker's arm is bleeding heavily, how do I stop it?" Bad phrasing: "Describe the procedure for managing lacerations."
+
+3. ANSWER — must follow these sub-rules:
+   a. Base EVERY step ONLY on the reference text above. If a step is not in the reference text, do not include it.
+   b. Number every step sequentially.
+   c. Write each step as a direct command: "Press firmly", "Do not remove", "Tilt the head back only if..."
+   d. Include a "warnings" list: things the user must NOT do (e.g., do not apply ice directly, do not give water).
+   e. Set when_to_call_AMBULANCE to true if: condition is life-threatening, victim is unconscious, breathing is affected, or text recommends professional care.
+
+4. SKIP RULE: If the reference text is a table of contents, index, glossary, image caption, or does not describe any actionable first aid procedure — output only:
+{% raw %}{"skip": true, "reason": "<one sentence reason>"}{% endraw %}
+
+5. DIFFICULTY CALIBRATION:
+   - easy: common, low-stakes scenario (minor cut, splinter)
+   - med: moderate urgency (sprain, mild allergic reaction, nosebleed)
+   - hard: life-threatening, time-critical (choking, cardiac arrest, severe bleeding)
+   The current difficulty is: {{ request.difficulty or 'med' }}
+
+---
+Respond ONLY with valid JSON. No preamble, no markdown code fences, no explanation outside the JSON.
+
+Required output format:
+{% raw %}
+{
+  "skip": false,
+  "condition": "<name of the medical condition or injury, e.g., second_degree_burn, choking, fracture>",
+  "difficulty": "<easy | med | hard>",
+  "scenario": "<2–3 sentence scene-setting context>",
+  "question": "<natural language question as the panicking user would type it>",
+  "answer": {
+    "summary": "<1 sentence direct answer — the single most important thing to do first>",
+    "steps": [
+      "<step 1>",
+      "<step 2>",
+      "<step 3>"
+    ],
+    "warnings": [
+      "<do NOT do this>",
+      "<avoid this>"
+    ],
+    "when_to_call_AMBULANCE": true,
+    "call_AMBULANCE_reason": "<why, or null if when_to_call_AMBULANCE is false>"
+  },
+  "source_tags": []
+}
+{% endraw %}
