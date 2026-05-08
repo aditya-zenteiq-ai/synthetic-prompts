@@ -1,5 +1,5 @@
 {
-  "instruction": "Using the provided first aid reference text, generate one frequently asked question (FAQ) about a first aid topic. Include the correct answer grounded in the text, a common misconception people hold about this topic, and the factual correction.",
+  "instruction": "Using the provided first aid reference text, generate frequently asked question's (FAQ's) about a first aid topic. Include the correct answer grounded in the text, a common misconception people hold about this topic, and the factual correction.",
   "task_type": "qa",
   "constraints": "The misconception must be a real, commonly held wrong belief (e.g., put butter on a burn, tilt head back for nosebleed, give water to someone who fainted). Do not invent misconceptions. The correction must cite behavior described in the seed text. If seed text has no actionable topic, output skip=true.",
   "metadata": {
