@@ -15,24 +15,37 @@ Strict Constraints: {{ instruction.constraints }}
 {% endif %}
 
 ---
+PERSONA CONTEXT — the user in this conversation IS this person. Write their messages in their voice:
+- Person asking: {{ request.user_persona or 'a bystander' }}
+- Victim: {{ request.victim or 'an adult' }}
+- Setting: {{ request.setting or 'unspecified' }}
+- Caller's prior first aid knowledge: {{ request.user_knowledge or 'none' }}
+{% if request.time_pressure %}
+- Time pressure / isolation: {{ request.time_pressure }}
+{% endif %}
+
+The user's vocabulary, panic level, and mistakes must be realistic for this persona. A parent with a child will panic differently than a coworker. A hiker 2 hours from help will ask different follow-up questions than someone in an office with an ambulance on the way.
+
+---
 GENERATION RULES — follow every rule exactly:
 
 CONVERSATION STRUCTURE — must follow this arc:
-  Turn 1 (user): Opens in a panic. States the broad emergency but NOT all details yet.
+  Turn 1 (user): Opens in a panic. States the broad emergency but NOT all details yet. Voice must match the persona.
   Turn 2 (assistant): Stays calm. Asks 1–2 targeted clarifying questions (e.g., "Is the person conscious?", "How old is the victim?", "Is the bleeding controlled?")
-  Turn 3 (user): Answers the questions. Reveals more details. May make a common mistake (e.g., tries to pull out an embedded object, applies ice directly to a burn).
-  Turn 4 (assistant): Corrects the mistake if one was made. Gives the first concrete action step. Asks follow-up if needed.
-  Turn 5+ (user/assistant): Continues until the procedure is complete or the user is told to call AMBULANCE.
+  Turn 3 (user): Answers the questions. Reveals more details. Makes a common mistake reflecting their persona and knowledge level (e.g., tries to pull out an embedded object, applies ice directly to a burn).
+  Turn 4 (assistant): Corrects the mistake. Gives the first concrete action step. Asks follow-up if needed.
+  Turn 5+ (user/assistant): Continues until the procedure is complete or the user is told to call AMBULANCE. If time_pressure indicates help is far away, the assistant must prioritize what to do while waiting.
 
 ASSISTANT BEHAVIOR RULES:
   a. Never give all steps at once — deliver 1–2 steps per turn, then check back.
   b. Never say "Great!", "Excellent!", "Good job!" — use neutral acknowledgments like "Understood." or "Okay."
   c. All instructions must be grounded ONLY in the reference text. Do not add steps not in the text.
-  d. Always include a AMBULANCE recommendation turn if the condition is life-threatening.
+  d. Always include an AMBULANCE recommendation turn if the condition is life-threatening.
+  e. If time_pressure is set (e.g., remote location), the assistant must explicitly address what to do while waiting for help.
 
 USER BEHAVIOR RULES:
-  a. User must sound scared, may use incomplete sentences.
-  b. User must make at least one mistake (wrong action, misconception) that the assistant corrects.
+  a. User must sound scared, may use incomplete sentences. Panic level and vocabulary must match the persona.
+  b. User must make at least one mistake (wrong action, misconception) consistent with their knowledge level and persona.
   c. User reveals information progressively — not all at once.
 
 SKIP RULE: If the reference text is a table of contents, index, glossary, or has no actionable first aid procedure, output only:
@@ -47,7 +60,7 @@ Required output format:
   "skip": false,
   "condition": "<medical condition or injury>",
   "difficulty": "<easy | med | hard>",
-  "context": "<1–2 sentence scene description — who, where, what happened>",
+  "context": "<1–2 sentence scene description — who, where, what happened, reflecting the persona>",
   "conversation": [
     {"role": "user", "content": "<message>"},
     {"role": "assistant", "content": "<message>"},
@@ -63,6 +76,8 @@ Required output format:
     "<action 1 the assistant guided>",
     "<action 2>"
   ],
-  "resolution": "<one of: called_AMBULANCE | self_managed | referred_to_doctor | monitoring>"
+  "resolution": "<one of: called_AMBULANCE | self_managed | referred_to_doctor | monitoring>",
+  "supplemented": false,
+  "supplemented_note": "<what was added beyond the reference text, or null>"
 }
 {% endraw %}
