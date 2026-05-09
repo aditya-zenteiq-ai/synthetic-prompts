@@ -1,0 +1,10 @@
+{
+  "instruction": "Using the provided first aid reference text, generate a realistic aftercare handoff note written by a first responder to a caregiver or family member. The note must explain what happened, what was done, what the caregiver should do at home, warning signs to watch for, and when to seek professional help. All instructions must be grounded strictly in the reference text.",
+  "task_type": "instruction_following",
+  "constraints": "All home care steps and warning signs must come only from the reference text. Language must be calibrated to the caregiver's knowledge level — plain English for non-medical caregivers, more precise for trained ones. Warning signs must be observable without equipment. Do not include clinical measurements (blood pressure, SpO2) unless explicitly in the seed text. If the seed text has no actionable first aid procedure, output skip=true.",
+  "metadata": {
+    "author": "aditya@zenteiq.com",
+    "domain": "first_aid",
+    "version": "v1.0"
+  }
+}
