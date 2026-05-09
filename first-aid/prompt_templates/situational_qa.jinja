@@ -15,18 +15,33 @@ Strict Constraints: {{ instruction.constraints }}
 {% endif %}
 
 ---
+PERSONA CONTEXT — the scenario and question must be written from this person's perspective:
+- Person asking: {{ request.user_persona or 'a bystander' }}
+- Victim: {{ request.victim or 'an adult' }}
+- Setting: {{ request.setting or 'unspecified' }}
+- Caller's prior first aid knowledge: {{ request.user_knowledge or 'none' }}
+{% if request.time_pressure %}
+- Time pressure / isolation: {{ request.time_pressure }}
+{% endif %}
+
+The scenario must be something this specific person would plausibly face. The question must sound like they typed it. The answer should acknowledge any real constraints this persona faces (no kit, no help nearby, responsible for a child, etc.) without adding steps beyond the reference text.
+
+---
 GENERATION RULES — follow every rule exactly:
 
-1. SCENARIO: Write 2–3 sentences. Set the scene — who is involved, where it happens, what just occurred. Make it feel like a real emergency a layperson would panic in.
+1. SCENARIO: Write 2–3 sentences. Set the scene — who is involved, where it happens, what just occurred. Ground it in the persona and setting above. Make it feel like a real emergency this specific person would panic in.
 
-2. QUESTION: Phrase it naturally, as if typed by a panicking person. Examples of good phrasing: "My son just swallowed bleach, what do I do?!" / "My coworker's arm is bleeding heavily, how do I stop it?" Bad phrasing: "Describe the procedure for managing lacerations."
+2. QUESTION: Phrase it naturally, as if typed by this panicking person. Match their vocabulary and tone.
+   Good: "My son just swallowed bleach, what do I do?!"
+   Bad: "Describe the procedure for managing lacerations."
 
 3. ANSWER — must follow these sub-rules:
    a. Base EVERY step ONLY on the reference text above. If a step is not in the reference text, do not include it.
    b. Number every step sequentially.
    c. Write each step as a direct command: "Press firmly", "Do not remove", "Tilt the head back only if..."
    d. Include a "warnings" list: things the user must NOT do (e.g., do not apply ice directly, do not give water).
-   e. Set when_to_call_AMBULANCE to true if: condition is life-threatening, victim is unconscious, breathing is affected, or text recommends professional care.
+   e. If time_pressure is set, include a note on what to prioritize while waiting for help — but only using steps from the reference text.
+   f. Set when_to_call_AMBULANCE to true if: condition is life-threatening, victim is unconscious, breathing is affected, or text recommends professional care.
 
 4. SKIP RULE: If the reference text is a table of contents, index, glossary, image caption, or does not describe any actionable first aid procedure — output only:
 {% raw %}{"skip": true, "reason": "<one sentence reason>"}{% endraw %}
@@ -44,10 +59,10 @@ Required output format:
 {% raw %}
 {
   "skip": false,
-  "condition": "<name of the medical condition or injury, e.g., second_degree_burn, choking, fracture>",
+  "condition": "<name of the medical condition or injury>",
   "difficulty": "<easy | med | hard>",
-  "scenario": "<2–3 sentence scene-setting context>",
-  "question": "<natural language question as the panicking user would type it>",
+  "scenario": "<2–3 sentence scene-setting context grounded in the persona>",
+  "question": "<natural language question as this panicking person would type it>",
   "answer": {
     "summary": "<1 sentence direct answer — the single most important thing to do first>",
     "steps": [
@@ -62,6 +77,8 @@ Required output format:
     "when_to_call_AMBULANCE": true,
     "call_AMBULANCE_reason": "<why, or null if when_to_call_AMBULANCE is false>"
   },
-  "source_tags": []
+  "source_tags": [],
+  "supplemented": false,
+  "supplemented_note": "<what was added beyond the reference text, or null>"
 }
 {% endraw %}
