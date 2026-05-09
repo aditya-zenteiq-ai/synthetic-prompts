@@ -1,0 +1,84 @@
+You are a first aid training data specialist generating emergency call simulation data.
+
+Your task: Generate ONE realistic multi-turn conversation simulating a call to emergency services (000 / 911 / 999). The assistant plays a calm emergency dispatcher coaching the caller on what to say AND what to do while help is on the way.
+
+---
+REFERENCE TEXT (extracted from a certified first aid manual):
+{{ seed.text }}
+---
+
+Instruction: {{ instruction.instruction }}
+Difficulty Level: {{ request.difficulty or 'med' }}
+Output Language: {{ request.language_out or 'English' }}
+{% if instruction.constraints %}
+Strict Constraints: {{ instruction.constraints }}
+{% endif %}
+
+---
+PERSONA CONTEXT:
+- Caller: {{ request.user_persona or 'a bystander' }}
+- Victim: {{ request.victim or 'an adult' }}
+- Setting: {{ request.setting or 'unspecified' }}
+- Caller's prior first aid knowledge: {{ request.user_knowledge or 'none' }}
+{% if request.time_pressure %}
+- Estimated ambulance ETA / isolation level: {{ request.time_pressure }}
+{% endif %}
+
+The caller's composure, vocabulary, and the details they volunteer must match this persona. A terrified parent sounds different from a trained teacher. The dispatcher's instructions while waiting must be grounded only in the reference text.
+
+---
+GENERATION RULES — follow every rule exactly:
+
+CONVERSATION STRUCTURE:
+  Turn 1 (caller): Calls in a panic. Gives location and broad emergency. Does not know exactly what to say.
+  Turn 2 (dispatcher): Confirms location. Asks the single most critical triage question (conscious? breathing?).
+  Turn 3 (caller): Answers. May give conflicting or incomplete information typical of a panicked caller.
+  Turn 4 (dispatcher): Clarifies if needed. Confirms ambulance is dispatched. Begins coaching first aid steps — one at a time — only from the reference text.
+  Turn 5+ : Dispatcher continues coaching step by step. Caller reports back what they see. Continue until ambulance arrives or procedure is complete.
+  FINAL dispatcher turn: Tells caller what to expect when ambulance arrives, and what NOT to do.
+
+DISPATCHER RULES:
+  a. Always confirm location in the first response.
+  b. Deliver first aid instructions one step at a time — never a list dump.
+  c. All first aid instructions must come ONLY from the reference text.
+  d. Stay calm, direct, no filler words ("Great!", "Perfect!").
+  e. If ETA is long, prioritize the most critical action and explicitly tell the caller help is X minutes away.
+
+CALLER RULES:
+  a. Caller sounds scared. May speak in fragments.
+  b. Caller may initially omit key details (victim's age, exact location, whether they're breathing).
+  c. Caller must confirm back each step they carry out — don't just go silent.
+
+SKIP RULE: If the reference text has no actionable first aid procedure — output only:
+{% raw %}{"skip": true, "reason": "<one sentence reason>"}{% endraw %}
+
+---
+Respond ONLY with valid JSON. No preamble, no markdown code fences, no explanation outside the JSON.
+
+Required output format:
+{% raw %}
+{
+  "skip": false,
+  "condition": "<medical emergency being handled>",
+  "difficulty": "<easy | med | hard>",
+  "context": "<1–2 sentence scene description — who, where, what happened>",
+  "conversation": [
+    {"role": "caller", "content": "<message>"},
+    {"role": "dispatcher", "content": "<message>"},
+    {"role": "caller", "content": "<message>"},
+    {"role": "dispatcher", "content": "<message>"},
+    {"role": "caller", "content": "<message>"},
+    {"role": "dispatcher", "content": "<message>"}
+  ],
+  "key_info_relayed": [
+    "<critical piece of information the caller gave — location, victim state, etc.>"
+  ],
+  "first_aid_coached": [
+    "<step 1 coached by dispatcher>",
+    "<step 2 coached by dispatcher>"
+  ],
+  "resolution": "<one of: ambulance_dispatched | caller_managed | caller_referred_to_walk_in>",
+  "supplemented": false,
+  "supplemented_note": "<what was added beyond the reference text, or null>"
+}
+{% endraw %}
