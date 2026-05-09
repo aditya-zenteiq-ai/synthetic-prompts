@@ -15,9 +15,21 @@ Strict Constraints: {{ instruction.constraints }}
 {% endif %}
 
 ---
+PERSONA CONTEXT — use this to shape the question phrasing, scenario framing, and tone of the answer:
+- Person asking: {{ request.user_persona or 'a general adult member of the public' }}
+- Victim (if applicable): {{ request.victim or 'an adult' }}
+- Setting: {{ request.setting or 'unspecified' }}
+- Caller's prior first aid knowledge: {{ request.user_knowledge or 'none' }}
+{% if request.time_pressure %}
+- Time pressure / isolation: {{ request.time_pressure }}
+{% endif %}
+
+The question must sound like it would genuinely come from this person in this setting. The detailed answer should acknowledge any constraints the persona faces (e.g., no kit available, alone with a child, remote location).
+
+---
 GENERATION RULES — follow every rule exactly:
 
-1. QUESTION: Phrase it as a genuine FAQ — something real people search or ask. Examples: "Should I remove a knife stuck in a wound?" / "Can I give aspirin to a child having a seizure?" / "Is it safe to put ice directly on a burn?"
+1. QUESTION: Phrase it as a genuine FAQ — something this specific persona would actually search or ask. Examples: "Should I remove a knife stuck in a wound?" / "Can I give aspirin to a child having a seizure?" / "Is it safe to put ice directly on a burn?"
 
 2. SHORT ANSWER: One direct sentence. The clearest possible answer. Example: "No — never remove an embedded object from a wound."
 
@@ -26,6 +38,7 @@ GENERATION RULES — follow every rule exactly:
    b. Explain WHY the correct action is taken.
    c. Give 2–4 numbered steps if the answer involves an action.
    d. Written in plain English for a non-medical audience.
+   e. If the persona has constraints (e.g., no kit, remote location), acknowledge them without adding steps not in the reference text.
 
 4. MISCONCEPTION: State the wrong belief plainly. Example: "Many people believe you should tilt your head back during a nosebleed to stop the blood." This must be a real, common wrong belief — not invented.
 
@@ -33,7 +46,9 @@ GENERATION RULES — follow every rule exactly:
 
 6. WHEN TO SEEK HELP: State clearly if/when the person should call AMBULANCE or go to a doctor.
 
-7. SKIP RULE: If the reference text is a table of contents, index, glossary, or does not describe any actionable first aid topic — output only:
+7. SUPPLEMENTED: If the reference text partially covers the topic and you needed to fill a gap using widely accepted first aid knowledge, set "supplemented" to true and briefly note what was added. If everything comes from the reference text, set to false.
+
+8. SKIP RULE: If the reference text is a table of contents, index, glossary, or does not describe any actionable first aid topic — output only:
 {% raw %}{"skip": true, "reason": "<one sentence reason>"}{% endraw %}
 
 ---
@@ -45,7 +60,7 @@ Required output format:
   "skip": false,
   "condition": "<topic/condition name, e.g., nosebleed, burn, choking>",
   "difficulty": "<easy | med | hard>",
-  "question": "<naturally phrased FAQ question>",
+  "question": "<naturally phrased FAQ question from this persona's perspective>",
   "short_answer": "<one direct sentence answer>",
   "detailed_answer": {
     "explanation": "<why this is the correct approach>",
@@ -59,6 +74,8 @@ Required output format:
     "why_its_wrong": "<why this is dangerous or incorrect, per the reference text>",
     "correct_action": "<what to do instead>"
   },
-  "when_to_seek_help": "<when to call AMBULANCE or see a doctor, or null if self-manageable>"
+  "when_to_seek_help": "<when to call AMBULANCE or see a doctor, or null if self-manageable>",
+  "supplemented": false,
+  "supplemented_note": "<what was added beyond the reference text, or null>"
 }
 {% endraw %}
