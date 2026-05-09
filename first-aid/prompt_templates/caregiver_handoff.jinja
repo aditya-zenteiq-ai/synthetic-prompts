@@ -1,0 +1,79 @@
+You are a first aid training data specialist generating aftercare and caregiver instruction data.
+
+Your task: Generate a realistic caregiver handoff note — written as if a first responder or trained first aider is handing off a patient to a family member or caregiver after initial treatment. The note must be calm, clear, and written for a non-medical reader.
+
+---
+REFERENCE TEXT (extracted from a certified first aid manual):
+{{ seed.text }}
+---
+
+Instruction: {{ instruction.instruction }}
+Difficulty Level: {{ request.difficulty or 'med' }}
+Output Language: {{ request.language_out or 'English' }}
+{% if instruction.constraints %}
+Strict Constraints: {{ instruction.constraints }}
+{% endif %}
+
+---
+PERSONA CONTEXT — the handoff is being given TO this person:
+- Caregiver receiving the handoff: {{ request.user_persona or 'a family member' }}
+- Patient: {{ request.victim or 'an adult' }}
+- Setting where handoff occurs: {{ request.setting or 'unspecified' }}
+- Caregiver's prior first aid knowledge: {{ request.user_knowledge or 'none' }}
+{% if request.time_pressure %}
+- Follow-up access to medical care: {{ request.time_pressure }}
+{% endif %}
+
+The language and detail level of the handoff note must be calibrated for this caregiver. A nurse receiving handoff can handle clinical language. A frightened parent needs plain English with no jargon. If follow-up care access is limited (e.g., rural area, no nearby clinic), the warning signs section must be especially clear.
+
+---
+GENERATION RULES — follow every rule exactly:
+
+1. WHAT HAPPENED: One sentence — what the injury or condition was and the context in which it occurred.
+
+2. WHAT WAS DONE: Numbered list of the first aid steps that were performed. Base ONLY on the reference text — do not add steps not described there.
+
+3. HOME CARE INSTRUCTIONS: What the caregiver must do now. Numbered, written as direct commands. ONLY from the reference text.
+
+4. WARNING SIGNS: List of observable signs that mean the caregiver must seek professional help immediately. These must be things the caregiver can see or feel — not clinical measurements.
+
+5. DO NOT LIST: Things the caregiver must NOT do. Must contrast with common mistakes from the reference text.
+
+6. WHEN TO SEEK HELP: Clear threshold — "Go to emergency if...", "Call a doctor if...", or "This can be managed at home if..."
+
+7. SKIP RULE: If the reference text has no actionable first aid procedure — output only:
+{% raw %}{"skip": true, "reason": "<one sentence reason>"}{% endraw %}
+
+---
+Respond ONLY with valid JSON. No preamble, no markdown code fences, no explanation outside the JSON.
+
+Required output format:
+{% raw %}
+{
+  "skip": false,
+  "condition": "<medical condition or injury>",
+  "difficulty": "<easy | med | hard>",
+  "handoff_note": {
+    "what_happened": "<one sentence description of the incident>",
+    "what_was_done": [
+      "<first aid step 1 that was performed>",
+      "<first aid step 2>"
+    ],
+    "home_care_instructions": [
+      "<instruction 1>",
+      "<instruction 2>"
+    ],
+    "warning_signs": [
+      "<observable sign 1 that means seek help>",
+      "<observable sign 2>"
+    ],
+    "do_not": [
+      "<do NOT do this>",
+      "<avoid this>"
+    ],
+    "when_to_seek_help": "<clear threshold for when to go to ER, call doctor, or manage at home>"
+  },
+  "supplemented": false,
+  "supplemented_note": "<what was added beyond the reference text, or null>"
+}
+{% endraw %}
