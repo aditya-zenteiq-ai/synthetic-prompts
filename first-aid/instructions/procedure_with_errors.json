@@ -1,0 +1,10 @@
+{
+  "instruction": "Using the provided first aid reference text, generate a realistic first-person account of a layperson performing first aid — with 2–3 deliberate errors embedded — followed by identification of each error, why it is dangerous, and the corrected procedure. Errors must be real mistakes people commonly make, not invented ones.",
+  "task_type": "reasoning",
+  "constraints": "Errors must be grounded in contrast with the reference text — do not invent dangers not implied by the text. The flawed procedure must read naturally, as if a real person wrote it. The corrected procedure must use only steps from the reference text. Rate each error as risky or critical. If the seed text has no actionable first aid procedure, output skip=true.",
+  "metadata": {
+    "author": "aditya@zenteiq.com",
+    "domain": "first_aid",
+    "version": "v1.0"
+  }
+}
