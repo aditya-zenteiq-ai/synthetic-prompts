@@ -1,0 +1,81 @@
+You are a first aid training data specialist building error-detection and reasoning datasets.
+
+Your task: Generate a flawed first aid procedure — one that contains 2–3 realistic mistakes a layperson might make — and then provide the corrections. This trains models to identify dangerous errors and explain why they are wrong.
+
+---
+REFERENCE TEXT (extracted from a certified first aid manual):
+{{ seed.text }}
+---
+
+Instruction: {{ instruction.instruction }}
+Difficulty Level: {{ request.difficulty or 'med' }}
+Output Language: {{ request.language_out or 'English' }}
+{% if instruction.constraints %}
+Strict Constraints: {{ instruction.constraints }}
+{% endif %}
+
+---
+PERSONA CONTEXT — the flawed procedure is written as if this person described what they did:
+- Person: {{ request.user_persona or 'a bystander' }}
+- Victim: {{ request.victim or 'an adult' }}
+- Setting: {{ request.setting or 'unspecified' }}
+- Person's prior first aid knowledge: {{ request.user_knowledge or 'none' }}
+{% if request.time_pressure %}
+- Time pressure / isolation: {{ request.time_pressure }}
+{% endif %}
+
+The mistakes in the flawed procedure must be realistic for this persona's knowledge level and setting. A person with no training makes different errors than someone who took a course years ago. The errors must not be invented — they must reflect real, commonly made mistakes.
+
+---
+GENERATION RULES — follow every rule exactly:
+
+1. FLAWED PROCEDURE: Write it as a first-person account of what the person did, in plain natural language. It must contain exactly 2–3 errors. Errors must be subtle enough that a layperson might not notice them — not obvious absurdities.
+
+2. ERRORS: For each error, identify:
+   a. The exact wrong step or action taken.
+   b. Why it is wrong or dangerous — citing the reference text.
+   c. What the correct action is, per the reference text.
+
+3. CORRECTED PROCEDURE: Rewrite the full procedure correctly, as numbered steps, based only on the reference text.
+
+4. DANGER LEVEL per error: Rate each error as "risky" (could cause harm) or "critical" (could cause death or serious injury).
+
+5. SKIP RULE: If the reference text does not describe an actionable first aid procedure — output only:
+{% raw %}{"skip": true, "reason": "<one sentence reason>"}{% endraw %}
+
+---
+Respond ONLY with valid JSON. No preamble, no markdown code fences, no explanation outside the JSON.
+
+Required output format:
+{% raw %}
+{
+  "skip": false,
+  "condition": "<medical condition or injury>",
+  "difficulty": "<easy | med | hard>",
+  "scenario_context": "<1 sentence — who, where, what happened>",
+  "flawed_procedure": "<first-person account of what the person did, containing 2–3 errors, written naturally>",
+  "errors": [
+    {
+      "error_id": 1,
+      "wrong_action": "<what they did wrong>",
+      "why_its_wrong": "<why this is dangerous, per the reference text>",
+      "correct_action": "<what they should have done instead>",
+      "danger_level": "<risky | critical>"
+    },
+    {
+      "error_id": 2,
+      "wrong_action": "<what they did wrong>",
+      "why_its_wrong": "<why this is dangerous, per the reference text>",
+      "correct_action": "<what they should have done instead>",
+      "danger_level": "<risky | critical>"
+    }
+  ],
+  "corrected_procedure": [
+    "<step 1>",
+    "<step 2>",
+    "<step 3>"
+  ],
+  "supplemented": false,
+  "supplemented_note": "<what was added beyond the reference text, or null>"
+}
+{% endraw %}
