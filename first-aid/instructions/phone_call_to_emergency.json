@@ -1,7 +1,7 @@
 {
-  "instruction": "Using the provided first aid reference text, generate a realistic emergency call simulation between a panicking caller and a calm dispatcher. The dispatcher must coach the caller through first aid steps one at a time while the ambulance is in transit. All first aid instructions must be grounded strictly in the reference text.",
+  "instruction": "Using the provided first aid reference text, generate a realistic emergency call simulation between a panicking caller and a calm dispatcher. The dispatcher must coach the caller through first aid steps one at a time while the ambulance is in transit. Ground the response primarily in the reference text. You may supplement with widely accepted first aid facts ONLY if the reference text partially covers the topic — but any supplemented content must be explicitly flagged.",
   "task_type": "qa",
-  "constraints": "The dispatcher must confirm location before giving any instructions. First aid steps must be delivered one at a time — never as a list. All coached instructions must come only from the seed text. The caller must confirm back each step they attempt. If the seed text has no actionable first aid procedure, output skip=true.",
+  "constraints": "The dispatcher must confirm location before giving any instructions. First aid steps must be delivered one at a time — never as a list. Ground all coached instructions primarily in the seed text. If the reference text partially covers the scenario, the dispatcher may supplement with widely accepted first aid guidance, but any supplemented content must be explicitly flagged. The caller must confirm back each step they attempt. If the seed text has no actionable first aid procedure, output skip=true.",
   "metadata": {
     "author": "aditya@zenteiq.com",
     "domain": "first_aid",

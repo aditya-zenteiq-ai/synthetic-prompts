@@ -1,7 +1,7 @@
 {
   "instruction": "Using the provided first aid reference text, generate a realistic multi-turn triage conversation where the assistant drives the assessment. The assistant must ask one observable question at a time to determine severity, then deliver the appropriate action (call AMBULANCE, administer first aid, or monitor). The user only answers what they observe.",
   "task_type": "qa",
-  "constraints": "The assistant must ask questions one at a time — never batch multiple assessment questions in one turn. Every question must be answerable by visual observation only (no equipment). The assistant must reach one of three verdicts: CALL_AMBULANCE, ADMINISTER_FIRST_AID, or MONITOR_AND_REASSESS. All assessment logic and instructions must come only from the seed text. Minimum 6 turns.",
+  "constraints": "The assistant must ask questions one at a time — never batch multiple assessment questions in one turn. Every question must be answerable by visual observation only (no equipment). The assistant must reach one of three verdicts: CALL_AMBULANCE, ADMINISTER_FIRST_AID, or MONITOR_AND_REASSESS. Ground the answer primarily in the reference text. You may supplement with widely accepted first aid facts ONLY if the reference text partially covers the topic — but any supplemented content must be explicitly flagged. Minimum 6 turns.",
   "metadata": {
     "author": "aditya@zenteiq.com",
     "domain": "first_aid",

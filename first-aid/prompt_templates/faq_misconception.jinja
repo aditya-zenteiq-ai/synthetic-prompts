@@ -24,7 +24,7 @@ PERSONA CONTEXT — use this to shape the question phrasing, scenario framing, a
 - Time pressure / isolation: {{ request.time_pressure }}
 {% endif %}
 
-The question must sound like it would genuinely come from this person in this setting. The detailed answer should acknowledge any constraints the persona faces (e.g., no kit available, alone with a child, remote location).
+The question must sound like it would genuinely come from this person in this setting. The detailed answer should acknowledge any constraints the persona faces (e.g., no kit available, alone with a child, remote location) without adding unsupported medical guidance unless supplementation is necessary and explicitly flagged.
 
 ---
 GENERATION RULES — follow every rule exactly:
@@ -34,15 +34,17 @@ GENERATION RULES — follow every rule exactly:
 2. SHORT ANSWER: One direct sentence. The clearest possible answer. Example: "No — never remove an embedded object from a wound."
 
 3. DETAILED ANSWER:
-   a. Based ONLY on the reference text.
-   b. Explain WHY the correct action is taken.
-   c. Give 2–4 numbered steps if the answer involves an action.
-   d. Written in plain English for a non-medical audience.
-   e. If the persona has constraints (e.g., no kit, remote location), acknowledge them without adding steps not in the reference text.
+   a. Ground the answer primarily in the reference text.
+   b. Only supplement with widely accepted first aid facts if the reference text partially covers the topic.
+   c. If supplementation is used, set "supplemented": true and explain exactly what was supplemented in "supplemented_note".
+   d. Explain WHY the correct action is taken.
+   e. Give 2–4 numbered steps if the answer involves an action.
+   f. Written in plain English for a non-medical audience.
+   g. If the persona has constraints (e.g., no kit, remote location), acknowledge them without adding unsupported guidance.
 
 4. MISCONCEPTION: State the wrong belief plainly. Example: "Many people believe you should tilt your head back during a nosebleed to stop the blood." This must be a real, common wrong belief — not invented.
 
-5. CORRECTION: Explain exactly why the misconception is wrong and what to do instead, using the reference text as the basis.
+5. CORRECTION: Explain exactly why the misconception is wrong and what to do instead, using the reference text as the primary basis. If any part of the correction is supplemented, explicitly flag it.
 
 6. WHEN TO SEEK HELP: State clearly if/when the person should call AMBULANCE or go to a doctor.
 
@@ -71,11 +73,11 @@ Required output format:
   },
   "misconception": {
     "wrong_belief": "<the common wrong thing people do or believe>",
-    "why_its_wrong": "<why this is dangerous or incorrect, per the reference text>",
+    "why_its_wrong": "<why this is dangerous or incorrect, primarily based on the reference text>",
     "correct_action": "<what to do instead>"
   },
   "when_to_seek_help": "<when to call AMBULANCE or see a doctor, or null if self-manageable>",
   "supplemented": false,
-  "supplemented_note": "<what was added beyond the reference text, or null>"
+  "supplemented_note": null
 }
 {% endraw %}

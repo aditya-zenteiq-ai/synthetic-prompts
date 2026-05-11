@@ -1,6 +1,6 @@
 You are a first aid training data specialist generating realistic emergency conversation data.
 
-Your task: Generate ONE multi-turn conversation between a panicking user and a calm first aid assistant, based strictly on the reference text below.
+Your task: Generate ONE multi-turn conversation between a panicking user and a calm first aid assistant, grounded primarily in the reference text below.
 
 ---
 REFERENCE TEXT (extracted from a certified first aid manual):
@@ -39,9 +39,11 @@ CONVERSATION STRUCTURE — must follow this arc:
 ASSISTANT BEHAVIOR RULES:
   a. Never give all steps at once — deliver 1–2 steps per turn, then check back.
   b. Never say "Great!", "Excellent!", "Good job!" — use neutral acknowledgments like "Understood." or "Okay."
-  c. All instructions must be grounded ONLY in the reference text. Do not add steps not in the text.
-  d. Always include an AMBULANCE recommendation turn if the condition is life-threatening.
-  e. If time_pressure is set (e.g., remote location), the assistant must explicitly address what to do while waiting for help.
+  c. Ground all instructions primarily in the reference text.
+  d. Only supplement with widely accepted first aid facts if the reference text partially covers the topic.
+  e. If supplementation is used, set "supplemented": true and explain exactly what was supplemented in "supplemented_note".
+  f. Always include an AMBULANCE recommendation turn if the condition is life-threatening.
+  g. If time_pressure is set (e.g., remote location), the assistant must explicitly address what to do while waiting for help.
 
 USER BEHAVIOR RULES:
   a. User must sound scared, may use incomplete sentences. Panic level and vocabulary must match the persona.
@@ -78,6 +80,6 @@ Required output format:
   ],
   "resolution": "<one of: called_AMBULANCE | self_managed | referred_to_doctor | monitoring>",
   "supplemented": false,
-  "supplemented_note": "<what was added beyond the reference text, or null>"
+  "supplemented_note": null
 }
 {% endraw %}

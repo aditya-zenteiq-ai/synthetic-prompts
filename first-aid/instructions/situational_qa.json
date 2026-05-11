@@ -1,7 +1,7 @@
 {
-  "instruction": "Using the provided first aid reference text, generate ONE realistic emergency scenario and a high-quality first aid Q&A pair. The scenario must be a real-life situation a layperson (bystander, parent, coworker, hiker) would face. The answer must be grounded strictly and only in the provided reference text.",
+  "instruction": "Using the provided first aid reference text, generate ONE realistic emergency scenario and a high-quality first aid Q&A pair. The scenario must be a real-life situation a layperson (bystander, parent, coworker, hiker) would face. Ground the answer primarily in the reference text. You may supplement with widely accepted first aid facts ONLY if the reference text partially covers the topic — but clearly flag the supplementation.",
   "task_type": "qa",
-  "constraints": "Do not add any steps, dosages, or procedures that are not explicitly stated in the seed text. Do not reference external guidelines, other manuals, or general medical knowledge outside the seed text. If seed text lacks a clear first aid procedure (e.g., is a glossary, index, or chapter header), output skip=true. Steps must be numbered and actionable by a non-medical person.",
+  "constraints": "Do not add any steps, dosages, or procedures that are not explicitly stated in the seed text unless supplementation is necessary because the reference text only partially covers the topic. Any supplemented information must be limited to widely accepted first aid facts and must be explicitly flagged in the output. Do not reference external guidelines, organizations, or manuals by name. If seed text lacks a clear first aid procedure (e.g., is a glossary, index, or chapter header), output skip=true. Steps must be numbered and actionable by a non-medical person.",
   "metadata": {
     "author": "aditya@zenteiq.com",
     "domain": "first_aid",

@@ -24,7 +24,7 @@ PERSONA CONTEXT — the scenario and question must be written from this person's
 - Time pressure / isolation: {{ request.time_pressure }}
 {% endif %}
 
-The scenario must be something this specific person would plausibly face. The question must sound like they typed it. The answer should acknowledge any real constraints this persona faces (no kit, no help nearby, responsible for a child, etc.) without adding steps beyond the reference text.
+The scenario must be something this specific person would plausibly face. The question must sound like they typed it. The answer should acknowledge any real constraints this persona faces (no kit, no help nearby, responsible for a child, etc.) without adding steps beyond the reference text unless supplementation is necessary and explicitly flagged.
 
 ---
 GENERATION RULES — follow every rule exactly:
@@ -36,12 +36,14 @@ GENERATION RULES — follow every rule exactly:
    Bad: "Describe the procedure for managing lacerations."
 
 3. ANSWER — must follow these sub-rules:
-   a. Base EVERY step ONLY on the reference text above. If a step is not in the reference text, do not include it.
-   b. Number every step sequentially.
-   c. Write each step as a direct command: "Press firmly", "Do not remove", "Tilt the head back only if..."
-   d. Include a "warnings" list: things the user must NOT do (e.g., do not apply ice directly, do not give water).
-   e. If time_pressure is set, include a note on what to prioritize while waiting for help — but only using steps from the reference text.
-   f. Set when_to_call_AMBULANCE to true if: condition is life-threatening, victim is unconscious, breathing is affected, or text recommends professional care.
+   a. Ground the answer primarily in the reference text.
+   b. Only supplement with widely accepted first aid facts if the reference text partially covers the topic.
+   c. If supplementation is used, set "supplemented": true and explain exactly what was supplemented in "supplemented_note".
+   d. Number every step sequentially.
+   e. Write each step as a direct command: "Press firmly", "Do not remove", "Tilt the head back only if..."
+   f. Include a "warnings" list: things the user must NOT do (e.g., do not apply ice directly, do not give water).
+   g. If time_pressure is set, include a note on what to prioritize while waiting for help — but only using reference-supported or explicitly supplemented information.
+   h. Set when_to_call_AMBULANCE to true if: condition is life-threatening, victim is unconscious, breathing is affected, or text recommends professional care.
 
 4. SKIP RULE: If the reference text is a table of contents, index, glossary, image caption, or does not describe any actionable first aid procedure — output only:
 {% raw %}{"skip": true, "reason": "<one sentence reason>"}{% endraw %}
@@ -79,6 +81,6 @@ Required output format:
   },
   "source_tags": [],
   "supplemented": false,
-  "supplemented_note": "<what was added beyond the reference text, or null>"
+  "supplemented_note": null
 }
 {% endraw %}

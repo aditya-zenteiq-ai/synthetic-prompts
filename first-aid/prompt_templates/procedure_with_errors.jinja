@@ -33,10 +33,15 @@ GENERATION RULES — follow every rule exactly:
 
 2. ERRORS: For each error, identify:
    a. The exact wrong step or action taken.
-   b. Why it is wrong or dangerous — citing the reference text.
+   b. Why it is wrong or dangerous — primarily citing the reference text.
    c. What the correct action is, per the reference text.
+   d. If any explanation or correction required supplementation, explicitly flag it in the output.
 
-3. CORRECTED PROCEDURE: Rewrite the full procedure correctly, as numbered steps, based only on the reference text.
+3. CORRECTED PROCEDURE:
+   a. Rewrite the full procedure correctly, as numbered steps.
+   b. Ground the corrected procedure primarily in the reference text.
+   c. Only supplement with widely accepted first aid facts if the reference text partially covers the topic.
+   d. If supplementation is used, set "supplemented": true and explain exactly what was supplemented in "supplemented_note".
 
 4. DANGER LEVEL per error: Rate each error as "risky" (could cause harm) or "critical" (could cause death or serious injury).
 
@@ -58,14 +63,14 @@ Required output format:
     {
       "error_id": 1,
       "wrong_action": "<what they did wrong>",
-      "why_its_wrong": "<why this is dangerous, per the reference text>",
+      "why_its_wrong": "<why this is dangerous, primarily based on the reference text>",
       "correct_action": "<what they should have done instead>",
       "danger_level": "<risky | critical>"
     },
     {
       "error_id": 2,
       "wrong_action": "<what they did wrong>",
-      "why_its_wrong": "<why this is dangerous, per the reference text>",
+      "why_its_wrong": "<why this is dangerous, primarily based on the reference text>",
       "correct_action": "<what they should have done instead>",
       "danger_level": "<risky | critical>"
     }
@@ -76,6 +81,6 @@ Required output format:
     "<step 3>"
   ],
   "supplemented": false,
-  "supplemented_note": "<what was added beyond the reference text, or null>"
+  "supplemented_note": null
 }
 {% endraw %}

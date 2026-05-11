@@ -1,7 +1,7 @@
 {
-  "instruction": "Using the provided first aid reference text, generate frequently asked question's (FAQ's) about a first aid topic. Include the correct answer grounded in the text, a common misconception people hold about this topic, and the factual correction.",
+  "instruction": "Using the provided first aid reference text, generate frequently asked question's (FAQ's) about a first aid topic. Include the correct answer grounded primarily in the reference text, a common misconception people hold about this topic, and the factual correction. You may supplement with widely accepted first aid facts ONLY if the reference text partially covers the topic — but clearly flag the supplementation.",
   "task_type": "qa",
-  "constraints": "The misconception must be a real, commonly held wrong belief (e.g., put butter on a burn, tilt head back for nosebleed, give water to someone who fainted). Do not invent misconceptions. The correction must cite behavior described in the seed text. If seed text has no actionable topic, output skip=true.",
+  "constraints": "The misconception must be a real, commonly held wrong belief (e.g., put butter on a burn, tilt head back for nosebleed, give water to someone who fainted). Do not invent misconceptions. The correction must primarily use behavior described in the seed text. Do not add procedures, dosages, or medical guidance beyond the seed text unless supplementation is necessary because the reference text only partially covers the topic. Any supplemented information must be explicitly flagged in the output. Do not reference external organizations or manuals by name. If seed text has no actionable topic, output skip=true.",
   "metadata": {
     "author": "aditya@zenteiq.com",
     "domain": "first_aid",
